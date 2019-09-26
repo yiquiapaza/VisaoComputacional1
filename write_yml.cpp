@@ -17,13 +17,13 @@ void callBackFunction(int event, int x, int y, int flangs, void* userdata);
 int main()
 {
 	std::string name;
-	std::cin >> name;
+	std::cin >> name;	
 	std::string dir_img = "D:/OpenCV/visao_trabalho1/" + name + ".jpg";
 	std::string dir_yml = "D:/" + name + ".yml";
 
-	cv::Mat image = cv::imread(dir_img);
-
-	if (image.empty())
+	cv::Mat image = cv::imread(dir_img);	
+	
+	if (image.empty()) 
 	{
 		std::cout << "Cant open or find Imagen" << std::endl;
 		return -1;
@@ -50,7 +50,7 @@ int main()
 	for (cv::Point2d point : points)
 	{
 		fs << "{:" << "x" << point.x << "y" << point.y << "}";
-	}
+	}	
 	fs << "]";
 
 	fs << "points2d" << "[";
@@ -60,19 +60,20 @@ int main()
 	fs << "]";
 
 	fs << "points3d" << "[";
-
-	// First points option
+	
+	// First points option for first image
+	/*
 	fs << "{:" << "x" << 0.0 << "y" << 0.0 << "z" << 0.0 << "}";
 	fs << "{:" << "x" << 7.32 << "y" << 0.0 << "z" << 0.0 << "}";
 	fs << "{:" << "x" << 12.82 << "y" << 0.0 << "z" << 0.0 << "}";
-	fs << "{:" << "x" << 12.82 << "y" << 5.5 << "z" << 0.0 << "}";
-	fs << "{:" << "x" << -5.5 << "y" << 5.5 << "z" << 0.0 << "}";
+	fs << "{:" << "x" << 12.82 << "y" << -5.5 << "z" << 0.0 << "}";
+	fs << "{:" << "x" << -5.5 << "y" << -5.5 << "z" << 0.0 << "}";
 	fs << "{:" << "x" << -5.5 << "y" << 0.0 << "z" << 0.0 << "}";
 	fs << "{:" << "x" << 0.0 << "y" << 0.0 << "z" << 2.44 << "}";
 	fs << "{:" << "x" << 7.32 << "y" << 0.0 << "z" << 2.44 << "}";
+	*/
 
-
-	// Second points option
+	// Second points option for firts image
 	/*
 	fs << "{:" << "x" << 0 << "y" << 0 << "z" << 0 << "}";
 	fs << "{:" << "x" << 0 << "y" << 0 << "z" << 2.44 << "}";
@@ -81,6 +82,18 @@ int main()
 	fs << "{:" << "x" << 12.82 << "y" << 0 << "z" << 0 << "}";
 	fs << "{:" << "x" << 23.82 << "y" << 0 << "z" << 0 << "}";
 	*/
+	
+	// Second Imagen
+	
+	fs << "{:" << "x" << 0.0 << "y" << 0.0 << "z" << 0.0 << "}";
+	fs << "{:" << "x" << 0.0 << "y" << 5.5 << "z" << 0.0 << "}";
+	fs << "{:" << "x" << -18.32 << "y" << 5.5 << "z" << 0.0 << "}";
+	fs << "{:" << "x" << 11 << "y" << 0.0 << "z" << 0.0 << "}";
+	fs << "{:" << "x" << 11 << "y" << 16.5 << "z" << 0.0 << "}";
+	fs << "{:" << "x" << -29.32 << "y" << 0.0 << "z" << 0.0 << "}";
+	fs << "{:" << "x" << 35.84 << "y" << 0.0 << "z" << 0.0 << "}";
+	fs << "{:" << "x" << 35.84 << "y" << 0.0 << "z" << 1 << "}";
+	
 	fs << "]";
 
 	std::cout << points << std::endl;
@@ -93,13 +106,13 @@ int main()
 // Debug program: F5 or Debug > Start Debugging menu
 
 void callBackFunction(int event, int x, int y, int flangs, void* userdata)
-{
-	if (points.size() < 8)
+{	
+	if (points.size() < 8) 
+	{
+		if (event == cv::EVENT_LBUTTONDOWN) 
 		{
-			if (event == cv::EVENT_LBUTTONDOWN)
-			{
-				points.push_back(cv::Point2d(x, y));
-				std::cout << "[" << x << "," << y << "]" << std::endl;
-			}
+			points.push_back(cv::Point2d(x, y));
+			std::cout << "[" << x << "," << y << "]" << std::endl;
 		}
+	}
 }

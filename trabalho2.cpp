@@ -106,27 +106,16 @@ int main()
 			case 5: P(i, j) = points3D[f].y; break;
 			case 6: P(i, j) = points3D[f].z; break;
 			case 7: P(i, j) = 1; break;
-			case 8: P(i, j) = -points2D[k].y * points3D[k].x; break;
-			case 9: P(i, j) = -points2D[k].y * points3D[k].y; break;
-			case 10: P(i, j) = -points2D[k].y * points3D[k].z; break;
-			case 11: P(i, j) = -points2D[k].y; break;
+			case 8: P(i, j) = -points2D[f].y * points3D[f].x; break;
+			case 9: P(i, j) = -points2D[f].y * points3D[f].y; break;
+			case 10: P(i, j) = -points2D[f].y * points3D[f].z; break;
+			case 11: P(i, j) = -points2D[f].y; break;
 			}
 		}
 	}
 	
-	std::cout << P << std::endl;
-
-	cv::Mat O = cv::Mat::zeros(12, 1, CV_64F);
 	cv::Mat out;
-	if (cv::solve(P, O, out, cv::DECOMP_SVD)) {
-		std::cout << out << std::endl;
-		std::cout << out.at<double>(0, 0) << std::endl;
-	}
-	else
-	{
-		std::cout << "bad" << std::endl;
-		std::cout << out.at<double>(0, 0) << std::endl;
-	}
+	cv::SVD::solveZ(P, out);
 
 	cv::Mat_<double> calibration(3, 4);
 	calibration(0, 0) = out.at<double>(0, 0);
@@ -149,24 +138,42 @@ int main()
 	//cv::setMouseCallback(name, callbackEvent, &x);
 		
 	cv::Mat_<double> point_cal(3, 1);
-	point_cal.at<double>(0, 0) =  249;
-	point_cal.at<double>(1, 0) =  125;
+	point_cal.at<double>(0, 0) =  -100;
+	point_cal.at<double>(1, 0) =  -100;
 	point_cal.at<double>(2, 0) = 1;	
 
-	cv::Mat_<double> o = calibration.t() * point_cal;
-	 
+	cv::Mat_<double> o1 = calibration.t() * calibration;
 
-	std::cout << o << std::endl;
+	cv::Mat_<double> o5 = o1.inv(cv::DECOMP_SVD);
+	
+	std::cout << "1" << std::endl;
+	std::cout << o1 << std::endl;
+	
+	cv::Mat_<double> o2 = calibration.t() * point_cal;
+
+	std::cout << "2" << std::endl;
+	std::cout << o2 << std::endl;
+
+	cv::Mat_<double> o3 = o5 * o2;
+
+	std::cout << "5" << std::endl;
+	std::cout << o3 << std::endl;
+
+	cv::Mat o = (calibration.t() * calibration).inv(cv::DECOMP_SVD) * calibration.t() * point_cal;
+
 	double x0 = o.at<double>(0.0) / o.at<double>(3.0);
 	double y0 = o.at<double>(1.0) / o.at<double>(3.0);
 	double z0 = o.at<double>(2.0) / o.at<double>(3.0);
 
+	std::cout << "x: " << x0 << " - " <<"y: " << y0 << "z: " << std::endl;
+
+	
 	cv::Mat_<double> first_point(4, 1);
 	cv::Mat_<double> second_point(4, 1);
 	
-	first_point(0, 0) = 66.18; first_point(1, 0) = y0; first_point(2, 0) = 0; first_point(3, 0) = 1;
-	second_point(0, 0) = -58.86; second_point(1, 0) = y0; second_point(2, 0) = 0; second_point(3, 0) = 1;
-
+	first_point(0, 0) = 0; first_point(1, 0) = 0; first_point(2, 0) = 0; first_point(3, 0) = 1;
+	second_point(0, 0) = 20; second_point(1, 0) = 0; second_point(2, 0) = 0; second_point(3, 0) = 1;
+	
 	cv::Mat_<double> out1 = calibration * first_point;
 	cv::Mat_<double> out2 = calibration * second_point;
 	
@@ -181,8 +188,10 @@ int main()
 
 	std::cout << x0 << " " << y0 << " " << z0 << " " << std::endl;
 
-	cv::line(img, p1, p2, cv::Scalar(255, 0, 255), 2, cv::LINE_8);
 
+
+	cv::line(img, p1, p2, cv::Scalar(255, 0, 255), 2, cv::LINE_8);
+	
 	cv::namedWindow(name, 1);
 	cv::imshow(name, img);
 	cv::waitKey(0);
